@@ -3,6 +3,7 @@
 //вывод массива на консоль
 void ConsoleOutput(std::vector<double> nums)
 {
+	//Перебор вектора элементов массива
 	for (auto iter = nums.begin(); iter < nums.end(); ++iter) {
 		std::cout << *iter<<" ";
 	}

@@ -1,5 +1,5 @@
-#pragma once
 #include <iostream>
+#pragma once
 void ShowGreetings();
 void ShowTask();
 void ShowOutputDataOption();

@@ -1,4 +1,5 @@
 #pragma once
+//Enum главного меню
 enum Menu
 {
 	Yes = 1,

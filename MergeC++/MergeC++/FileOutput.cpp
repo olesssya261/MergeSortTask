@@ -1,6 +1,6 @@
 #include "FileOutput.h"
-#include <fstream>
-#include <iostream>
+#include <fstream>//Библиотека ввода-вывода в файл
+#include <iostream>//Библиотека ввода-вывода на консоль
 #include "PersonalInterface.h"
 #include "Checks.h"
 #include <filesystem>//Подключение библеотеки для проверки состояния фаила
