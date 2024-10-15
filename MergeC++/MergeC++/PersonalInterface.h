@@ -1,0 +1,10 @@
+#pragma once
+#include <iostream>
+void ShowGreetings();
+void ShowTask();
+void ShowOutputDataOption();
+void ShowInputOption();
+void ShowOutputType();
+void ShowMassiveInput();
+void ShowOutputChoice();
+void ShowMassiveQuantity();
