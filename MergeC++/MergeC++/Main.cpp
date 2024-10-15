@@ -40,7 +40,7 @@ int main()
 			ConsoleOutput(nums); //Вывод считанных данных на консоль
 			break;
 		}
-		MergeSort(nums, 0, nums.size() - 1);
+		MergeSort(nums, 0, static_cast<int>(nums.size() - 1));
 		std::cout << "Итоговый массив:" << std::endl;
 		ConsoleOutput(nums); //Вывод считанных данных на консоль
 		ShowOutputType(); //Вывод сообщения об сохранении выбранных данных в файл

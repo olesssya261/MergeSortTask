@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,10 +128,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Algoritm.cpp" />
     <ClCompile Include="Checks.cpp" />
     <ClCompile Include="ConsoleInput.cpp" />
     <ClCompile Include="ConsoleOutput.cpp" />
+    <ClCompile Include="FileOutput.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PersonalInterface.cpp" />
+    <ClCompile Include="RandomInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algoritm.h" />
@@ -139,6 +144,7 @@
     <ClInclude Include="ConsoleOutput.h" />
     <ClInclude Include="FileOutput.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="PersonalInterface.h" />
     <ClInclude Include="RandomInput.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
