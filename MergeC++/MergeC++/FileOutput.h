@@ -1,4 +1,7 @@
 #pragma once
 #include <vector>//Библиотека вектора
-//Сохранение вектора в файл
+/// <summary>
+/// Функция сохранения вектора в файл
+/// </summary>
+/// <param name="nums"></param>
 void FileOutput(std::vector<double> nums);

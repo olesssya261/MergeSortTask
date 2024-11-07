@@ -34,7 +34,7 @@ void ShowOutputType()
 
 void ShowMassiveInput()
 {
-	std::cout << "Введите массив." << std::endl;
+	std::cout << "Введите массив.В качестве десятичного разделителя используйте запятую." << std::endl;
 }
 void ShowOutputChoice()
 {

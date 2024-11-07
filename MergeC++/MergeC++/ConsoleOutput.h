@@ -1,4 +1,7 @@
 #pragma once
 #include <vector>//Библиотека вектора
-//Функция вывода вектора на консоль
+/// <summary>
+/// Функция вывода вектора на консоль
+/// </summary>
+/// <param name="nums"></param>
 void ConsoleOutput(std::vector<double> nums);

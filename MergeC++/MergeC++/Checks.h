@@ -1,7 +1,15 @@
 #pragma once
-//Функция ввода пользовательского решения
+/// <summary>
+/// </summary>
+/// <returns> Возвращает пункт меню </returns>
 int GetUserChoice();
-//Функция ввода значения с плавающей точкой
+
+/// <summary>
+/// </summary>
+/// <returns> Возвращает значение с плавающей точкой </returns>
 double GetDouble();
-//Функция ввода целочисленного значения больше нуля
+
+/// <summary>
+/// </summary>
+/// <returns> Возвращает целочисленное значение больше нуля </returns>
 int GetPositiveIntMoreThan0();
