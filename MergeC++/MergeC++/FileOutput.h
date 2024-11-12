@@ -3,5 +3,5 @@
 /// <summary>
 /// Функция сохранения вектора в файл
 /// </summary>
-/// <param name="nums"></param>
+/// <param name="nums">массив</param>
 void FileOutput(std::vector<double> nums);

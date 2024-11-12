@@ -3,7 +3,7 @@
 /// <summary>
 /// Функция сортировки слиянием
 /// </summary> 
-/// <param name="nums"></param>
-/// <param name="left"></param>
-/// <param name="right"></param>
+/// <param name="nums"> массив</param>
+/// <param name="left"> левая граница массива</param>
+/// <param name="right">правая граница массива</param>
 void MergeSort(std::vector<double>& nums, int left, int right);

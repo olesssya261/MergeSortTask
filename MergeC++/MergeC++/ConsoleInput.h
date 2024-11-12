@@ -3,6 +3,6 @@
 /// <summary>
 /// Функция заполнения вектора из консоли
 /// </summary>
-/// <param name="nums"></param>
-/// <param name="count"></param>
+/// <param name="nums"> массив</param>
+/// <param name="count"> количество элементов в массиве</param>
 void ConsoleInput(std::vector<double>& nums, int count);
