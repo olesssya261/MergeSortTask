@@ -3,9 +3,9 @@
 
 void RandomInput(std::vector<double>& nums, int count)
 {
-	const int lowerBound = -100;//Нижняя граница генерируемых значений
-	const int upperBound = 100;//Верхняя граница генерируемых значений
-	srand(static_cast<unsigned int>(time(NULL)));//Привязка генератора случайных чисел ко времени
+	const int lowerBound = -100;//РќРёР¶РЅСЏСЏ РіСЂР°РЅРёС†Р° РіРµРЅРµСЂРёСЂСѓРµРјС‹С… Р·РЅР°С‡РµРЅРёР№
+	const int upperBound = 100;//Р’РµСЂС…РЅСЏСЏ РіСЂР°РЅРёС†Р° РіРµРЅРµСЂРёСЂСѓРµРјС‹С… Р·РЅР°С‡РµРЅРёР№
+	srand(static_cast<unsigned int>(time(NULL)));//РџСЂРёРІСЏР·РєР° РіРµРЅРµСЂР°С‚РѕСЂР° СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР» РєРѕ РІСЂРµРјРµРЅРё
 	for (int i = 0; i < count; i++) {
 		nums.push_back(rand() % (upperBound - lowerBound + 1) + lowerBound + (double)rand() / RAND_MAX);
 		

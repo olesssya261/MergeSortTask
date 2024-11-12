@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>//Библиотека вектора
+#include <vector>//Р‘РёР±Р»РёРѕС‚РµРєР° РІРµРєС‚РѕСЂР°
 /// <summary>
-/// Функция сохранения вектора в файл
+/// Р¤СѓРЅРєС†РёСЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РІРµРєС‚РѕСЂР° РІ С„Р°Р№Р»
 /// </summary>
 /// <param name="nums"></param>
 void FileOutput(std::vector<double> nums);

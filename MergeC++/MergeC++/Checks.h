@@ -1,15 +1,15 @@
 #pragma once
 /// <summary>
 /// </summary>
-/// <returns> Возвращает пункт меню </returns>
+/// <returns> Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСѓРЅРєС‚ РјРµРЅСЋ </returns>
 int GetUserChoice();
 
 /// <summary>
 /// </summary>
-/// <returns> Возвращает значение с плавающей точкой </returns>
+/// <returns> Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ СЃ РїР»Р°РІР°СЋС‰РµР№ С‚РѕС‡РєРѕР№ </returns>
 double GetDouble();
 
 /// <summary>
 /// </summary>
-/// <returns> Возвращает целочисленное значение больше нуля </returns>
+/// <returns> Р’РѕР·РІСЂР°С‰Р°РµС‚ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ Р±РѕР»СЊС€Рµ РЅСѓР»СЏ </returns>
 int GetPositiveIntMoreThan0();

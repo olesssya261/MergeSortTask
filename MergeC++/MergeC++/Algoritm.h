@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>//Библиотека вектора
+#include <vector>//Р‘РёР±Р»РёРѕС‚РµРєР° РІРµРєС‚РѕСЂР°
 /// <summary>
-/// Функция сортировки слиянием
+/// Р¤СѓРЅРєС†РёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё СЃР»РёСЏРЅРёРµРј
 /// </summary> 
 /// <param name="nums"></param>
 /// <param name="left"></param>

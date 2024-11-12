@@ -1,5 +1,5 @@
 #pragma once
-//Enum главного меню
+//Enum РіР»Р°РІРЅРѕРіРѕ РјРµРЅСЋ
 enum Menu
 {
 	ManualInput=1,

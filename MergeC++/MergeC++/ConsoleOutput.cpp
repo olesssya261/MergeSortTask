@@ -1,9 +1,9 @@
 #include "ConsoleOutput.h"
 #include <iostream>
-//вывод массива на консоль
+//РІС‹РІРѕРґ РјР°СЃСЃРёРІР° РЅР° РєРѕРЅСЃРѕР»СЊ
 void ConsoleOutput(std::vector<double> nums)
 {
-	//Перебор вектора элементов массива
+	//РџРµСЂРµР±РѕСЂ РІРµРєС‚РѕСЂР° СЌР»РµРјРµРЅС‚РѕРІ РјР°СЃСЃРёРІР°
 	for (auto iter = nums.begin(); iter < nums.end(); ++iter) {
 		std::cout << *iter<<" ";
 	}

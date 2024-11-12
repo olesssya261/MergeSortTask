@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>//Библиотека вектора
+#include <vector>//Р‘РёР±Р»РёРѕС‚РµРєР° РІРµРєС‚РѕСЂР°
 /// <summary>
-/// Функция вывода вектора на консоль
+/// Р¤СѓРЅРєС†РёСЏ РІС‹РІРѕРґР° РІРµРєС‚РѕСЂР° РЅР° РєРѕРЅСЃРѕР»СЊ
 /// </summary>
 /// <param name="nums"></param>
 void ConsoleOutput(std::vector<double> nums);
