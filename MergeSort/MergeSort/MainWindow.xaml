@@ -4,9 +4,223 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MergeSort"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Background="White"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Style="{StaticResource MaterialDesignWindow}"
+        Title="MainWindow">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <Menu Grid.Row="0" FontSize="10">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Открыть">
+                    <MenuItem Header="Из Exel формата" Command="{Binding ImportParametersFromExelCommand}"/>
+                    <MenuItem Header="Из Txt формата" Command="{Binding ImportParametersFromTxtCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Сохранить">
+                    <MenuItem Header="Исходные данные">
+                        <MenuItem Header="В Exel формат" Command="{Binding ExportParametersToExelCommand}"/>
+                        <MenuItem Header="В Txt формат" Command="{Binding ExportParametersToTxtCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="Итоговые данные">
+                        <MenuItem Header="В Exel формат" Command="{Binding ExportResultsToExelCommand}"/>
+                        <MenuItem Header="В Txt формат" Command="{Binding ExportResultsToTxtCommand}"/>
+                    </MenuItem>
+                </MenuItem>
+            </MenuItem>
+            <Separator/>
+            <MenuItem Header="Справка" Command="{Binding OpenAboutWindowCommand}"/>
+        </Menu>
+
+        <TabControl Grid.Row="1"
+                     HorizontalContentAlignment="Center"
+                    materialDesign:ColorZoneAssist.Mode="PrimaryLight"
+                    materialDesign:NavigationRailAssist.SelectionCornerRadius="50"
+                    materialDesign:NavigationRailAssist.ShowSelectionBackground="True"
+                    Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+                    TabStripPlacement="Bottom">
+
+            <!-- Вкладка сортировки -->
+            <TabItem   Background="White" Header="Сортировка" Width="150" Margin="10 0 0 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Комбобокс с выбором сортировки -->
+                    <ComboBox Grid.Row="0" 
+                              Margin="16 16 16 8" 
+                              HorizontalAlignment="Left"
+                              Width="256"
+                              materialDesign:HintAssist.HelperText="Метод сортировки"
+                              materialDesign:HintAssist.Hint="Не выбран метод сортировки"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                        <ComboBoxItem Content="Сортировка слиянием"/>
+                        <ComboBoxItem Content="Сортировка пузырьком"/>
+                        <ComboBoxItem Content="Быстрая сортировка"/>
+                    </ComboBox>
+
+                    <!-- Основной контент -->
+                    <Grid Grid.Row="1" Margin="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Левая панель - ввод/вывод -->
+                        <StackPanel Grid.Column="0" Margin="0 0 16 0">
+                            <!-- Блок исходного массива -->
+                            <StackPanel Orientation="Vertical" Margin="0 0 0 16">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Исходный массив"/>
+                                    <materialDesign:PopupBox HorizontalAlignment="Center"
+                                                            StaysOpen="True" 
+                                                            Margin="5">
+                                        <materialDesign:PopupBox.ToggleContent>
+                                            <materialDesign:PackIcon Kind="InformationVariant"/>
+                                        </materialDesign:PopupBox.ToggleContent>
+                                        <TextBlock 
+                                            Text="Ввод элементов производится в одну строку, разделителем элементов считается пробел, разделителем десятичной части считается точка."
+                                            Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                                            TextWrapping="Wrap"
+                                            Margin="5"
+                                            Padding="8"
+                                            FontStyle="Italic"
+                                            TextAlignment="Left"/>
+                                    </materialDesign:PopupBox>
+                                </StackPanel>
+
+                                <Line Margin="0 0 0 5" 
+                                      X1="0" Y1="1" 
+                                      X2="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=StackPanel}}" 
+                                      Y2="1" 
+                                      Stroke="#88cbd8"/>
+
+                                <TextBox x:Name="InputArrayTextBox"
+                                         materialDesign:HintAssist.Hint="Введите элементы массива через пробел (например: 5 3 8 1)"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         Margin="0 8 0 16"/>
+                            </StackPanel>
+
+                            <!-- Блок отсортированного массива -->
+                            <StackPanel Orientation="Vertical" Margin="0 0 0 16">
+                                <Label Content="Отсортированный массив"/>
+                                <Line Margin="0 0 0 5" 
+                                      X1="0" Y1="1" 
+                                      X2="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=StackPanel}}" 
+                                      Y2="1" 
+                                      Stroke="#88cbd8"/>
+                                <TextBox materialDesign:HintAssist.Hint="Отсортированный массив"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         IsReadOnly="True"/>
+                            </StackPanel>
+
+                            <!-- Кнопки -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="Рассчитать"
+                                        Margin="0 0 10 0"
+                                        Style="{StaticResource MaterialDesignRaisedDarkButton}"/>
+                                <Button Content="Сохранить в БД"
+                                        Style="{StaticResource MaterialDesignRaisedDarkButton}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Правая панель - характеристики -->
+                        <materialDesign:Card Grid.Column="1" 
+                                           Padding="0">
+                            <Grid>
+                                <Grid.Resources>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignBody2TextBlock}">
+                                        <Setter Property="Margin" Value="12 8"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
+                                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>
+                                    </Style>
+                                </Grid.Resources>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Заголовок -->
+                                <Border Grid.Row="0" Background="{DynamicResource MaterialDesignHeaderBackground}">
+                                    <StackPanel Orientation="Horizontal" Margin="8">
+                                        <materialDesign:PackIcon Kind="Sort" Margin="0 0 8 0"
+                                                               Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                        <TextBlock Text="Характеристики сортировки" 
+                                                  Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Название алгоритма -->
+                                <Border Grid.Row="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Алгоритм:" FontWeight="SemiBold"/>
+                                        <TextBlock Grid.Column="1" Text="Быстрая сортировка (QuickSort)" 
+                                                  Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Сложность -->
+                                <Border Grid.Row="2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Сложность:" FontWeight="SemiBold"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <TextBlock Text="O(n log n)"/>
+                                            <TextBlock Text=" (худший O(n²))" Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
+                                                      FontSize="12" VerticalAlignment="Bottom" Margin="4 0 0 2"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Детали -->
+                                <Border Grid.Row="3">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="Операции:" FontWeight="SemiBold"/>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock Text="Сравнения: O(n log n)"/>
+                                            <TextBlock Text="Перестановки: O(n log n)" Margin="0 4 0 0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </materialDesign:Card>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка БД -->
+            <TabItem Width="150" Header="БД">
+                <Grid Background="{DynamicResource MaterialDesignPaper}">
+                    <!-- Здесь будет содержимое вкладки БД -->
+                    <TextBlock Text="Содержимое базы данных будет здесь" 
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
