@@ -8,6 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MergeSort.ViewModel;
+using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace MergeSort;
 
@@ -16,8 +18,26 @@ namespace MergeSort;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public event EventHandler openDbMenu;
+    public MainWindow(MainViewModel mainViewModel)
     {
+        DataContext = mainViewModel;
         InitializeComponent();
+    }
+
+    private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm)
+        {
+            vm.OpenDbMenuCommand?.Execute(null);
+
+            if (e.Source is TabControl tabControl &&
+            tabControl.SelectedItem == DatabaseTab)
+            {
+                
+             vm.OpenDbMenuCommand?.Execute(null);
+            }
+            
+        }
     }
 }

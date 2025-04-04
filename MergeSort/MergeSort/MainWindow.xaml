@@ -4,11 +4,65 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MergeSort"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        MinWidth="800" 
+        MinHeight="600"
+        xmlns:converters="clr-namespace:MergeSort.Converters"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         Background="White"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
         Title="MainWindow">
+    <Window.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+        <converters:ReverseBooleanToVisibilityConverter x:Key="ReverseBoolToVisConverter"/>
+        <Style x:Key="CleanTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                             BorderBrush="{TemplateBinding BorderBrush}"
+                             BorderThickness="0"
+                             CornerRadius="2">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                       Margin="{TemplateBinding Padding}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                    <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                             BorderBrush="{TemplateBinding BorderBrush}"
+                             BorderThickness="0"
+                             CornerRadius="2">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -42,31 +96,35 @@
                     materialDesign:NavigationRailAssist.SelectionCornerRadius="50"
                     materialDesign:NavigationRailAssist.ShowSelectionBackground="True"
                     Style="{StaticResource MaterialDesignNavigationRailTabControl}"
-                    TabStripPlacement="Bottom">
+                    TabStripPlacement="Bottom" SelectionChanged="TabControl_SelectionChanged">
 
             <!-- Вкладка сортировки -->
-            <TabItem   Background="White" Header="Сортировка" Width="150" Margin="10 0 0 0">
-                <Grid>
+            <TabItem   Background="White" Header="Сортировка" Width="150" Margin="0 0 0 0">
+                <Viewbox Stretch="Uniform" StretchDirection="Both" Margin="0">
+                    <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
                     <!-- Комбобокс с выбором сортировки -->
-                    <ComboBox Grid.Row="0" 
+                        <ComboBox Grid.Row="0" 
                               Margin="16 16 16 8" 
                               HorizontalAlignment="Left"
-                              Width="256"
+                              SelectedValuePath="Value"
+                              Width="255"
+                              ItemsSource="{Binding Methods, Mode=OneTime,UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValue="{Binding SelectedMethod,Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               materialDesign:HintAssist.HelperText="Метод сортировки"
-                              materialDesign:HintAssist.Hint="Не выбран метод сортировки"
                               Style="{StaticResource MaterialDesignOutlinedComboBox}">
-                        <ComboBoxItem Content="Сортировка слиянием"/>
-                        <ComboBoxItem Content="Сортировка пузырьком"/>
-                        <ComboBoxItem Content="Быстрая сортировка"/>
-                    </ComboBox>
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding Key}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
-                    <!-- Основной контент -->
-                    <Grid Grid.Row="1" Margin="16">
+                        <Grid Grid.Row="1" Margin="16">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3*"/>
                             <ColumnDefinition Width="2*"/>
@@ -104,6 +162,8 @@
                                 <TextBox x:Name="InputArrayTextBox"
                                          materialDesign:HintAssist.Hint="Введите элементы массива через пробел (например: 5 3 8 1)"
                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         Text="{Binding ArrayModel.ArrayData,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                         MaxWidth="420"
                                          Margin="0 8 0 16"/>
                             </StackPanel>
 
@@ -117,6 +177,8 @@
                                       Stroke="#88cbd8"/>
                                 <TextBox materialDesign:HintAssist.Hint="Отсортированный массив"
                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         Text="{Binding ArrayModel.SortedArrayData}"
+                                         MaxWidth="420"
                                          IsReadOnly="True"/>
                             </StackPanel>
 
@@ -124,8 +186,10 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                 <Button Content="Рассчитать"
                                         Margin="0 0 10 0"
-                                        Style="{StaticResource MaterialDesignRaisedDarkButton}"/>
+                                        Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                                        Command="{Binding SortCommand}"/>
                                 <Button Content="Сохранить в БД"
+                                        Command="{Binding SaveArrayCommand}"
                                         Style="{StaticResource MaterialDesignRaisedDarkButton}"/>
                             </StackPanel>
                         </StackPanel>
@@ -148,9 +212,8 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
 
                                 <!-- Заголовок -->
                                 <Border Grid.Row="0" Background="{DynamicResource MaterialDesignHeaderBackground}">
@@ -170,7 +233,7 @@
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Алгоритм:" FontWeight="SemiBold"/>
-                                        <TextBlock Grid.Column="1" Text="Быстрая сортировка (QuickSort)" 
+                                            <TextBlock Grid.Column="1" Text="{Binding ArrayModel.SortType}"
                                                   Foreground="{DynamicResource PrimaryHueMidBrush}"/>
                                     </Grid>
                                 </Border>
@@ -182,17 +245,12 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Сложность:" FontWeight="SemiBold"/>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                            <TextBlock Text="O(n log n)"/>
-                                            <TextBlock Text=" (худший O(n²))" Foreground="{DynamicResource MaterialDesignValidationErrorBrush}" 
-                                                      FontSize="12" VerticalAlignment="Bottom" Margin="4 0 0 2"/>
-                                        </StackPanel>
+                                       
                                     </Grid>
                                 </Border>
 
                                 <!-- Детали -->
-                                <Border Grid.Row="3">
+                                <Border Grid.Row="2">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
@@ -200,26 +258,226 @@
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Text="Операции:" FontWeight="SemiBold"/>
                                         <StackPanel Grid.Column="1">
-                                            <TextBlock Text="Сравнения: O(n log n)"/>
-                                            <TextBlock Text="Перестановки: O(n log n)" Margin="0 4 0 0"/>
-                                        </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Сравнения:"/>
+                                                    <TextBlock Text="{Binding ArrayModel.Comparisons}"/>
+                                                </StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Перестановки:"/>
+                                                    <TextBlock Text="{Binding ArrayModel.Swaps}"/>
+                                                </StackPanel>
+                                                </StackPanel>
                                     </Grid>
                                 </Border>
                             </Grid>
                         </materialDesign:Card>
                     </Grid>
                 </Grid>
+                </Viewbox>
             </TabItem>
+            <TabItem Width="150" Header="БД" x:Name="DatabaseTab">
+                <Viewbox VerticalAlignment="Top">
+                    <StackPanel Orientation="Vertical" Margin="0 10 0 0">
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <Label Content="Исходные массивы"/>
+                            <ToggleButton
+  IsChecked="{Binding SortedArrayFlag}"
+  Style="{StaticResource MaterialDesignSwitchToggleButton}"
+  ToolTip="MaterialDesignSwitchToggleButton"
+  />
+                            <Label Content="Отсортированные массивы"/>
+                        </StackPanel>
+                        <ListView HorizontalAlignment="Center"
+                                  Visibility="{Binding SortedArrayFlag, Converter={StaticResource BoolToVisConverter}}"
+          VerticalAlignment="Top"
+          ItemsSource="{Binding SortedArrayModels}"
+          SelectedItem="{Binding SelectedArrayModel}"
+          Margin="8"
+          BorderThickness="1"
+          BorderBrush="#DDD"
+          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListView.Resources>
+                                <converters:DateTimeToStringConverter x:Key="DateTimeConverter"/>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <!-- Колонка ID -->
+                                    <GridViewColumn Header="ID" Width="100">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding IdSortArray}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch"
+                                 IsEnabled="False"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
 
-            <!-- Вкладка БД -->
-            <TabItem Width="150" Header="БД">
-                <Grid Background="{DynamicResource MaterialDesignPaper}">
-                    <!-- Здесь будет содержимое вкладки БД -->
-                    <TextBlock Text="Содержимое базы данных будет здесь" 
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"/>
-                </Grid>
+                                    <!-- Колонка исходного массива -->
+                                    <GridViewColumn Header="Исходный массив" Width="200">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding ArrayData}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch"
+                                 IsReadOnly="True"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!-- Колонка отсортированного массива -->
+                                    <GridViewColumn Header="Отсортированный массив" Width="250" >
+                                        <GridViewColumn.CellTemplate >
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding SortedArrayData}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch"
+                                 IsReadOnly="True"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!-- Колонка метода сортировки -->
+                                    <GridViewColumn Header="Метод сортировки" Width="200">
+                                        <GridViewColumn.CellTemplate >
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding SortType}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch"
+                                 IsEnabled="False"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!-- Колонка сравнений -->
+                                    <GridViewColumn Header="Сравнения" Width="180">
+                                        <GridViewColumn.CellTemplate >
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Comparisons}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Center"
+                                 IsEnabled="False"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!-- Колонка перестановок -->
+                                    <GridViewColumn Header="Перестановки" Width="180">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding Swaps}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Center"
+                                 IsEnabled="False"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Время сохранения" Width="220">
+                                        <GridViewColumn.CellTemplate >
+                                            <DataTemplate>
+                                                <TextBox
+                                                    IsReadOnly="True"
+            VerticalAlignment="Center"
+            Text="{Binding CreatedAt, Converter={StaticResource DateTimeConverter},
+          ConverterParameter='dd-MM-yyyy HH:mm:ss'}" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <!-- Кнопка удаления -->
+                                    <GridViewColumn Header="" Width="60">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding DataContext.DeleteArrayCommand, 
+RelativeSource={RelativeSource AncestorType=Window}}"
+CommandParameter="{Binding}" 
+
+ToolTip="Удалить"
+HorizontalAlignment="Center">
+                                                    <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <ListView HorizontalAlignment="Center"
+                                         Visibility="{Binding SortedArrayFlag, Converter={StaticResource ReverseBoolToVisConverter}}"
+          VerticalAlignment="Top"
+          ItemsSource="{Binding InitialArrayModels}"
+          SelectedItem="{Binding SelectedArrayModel}"
+          Margin="8"
+          BorderThickness="1"
+          BorderBrush="#DDD"
+          ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListView.Resources>
+                                <converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
+                                <converters:DateTimeToStringConverter x:Key="DateTimeConverter"/>
+                            </ListView.Resources>
+                            <ListView.View>
+                                <GridView>
+                                    <!-- Колонка ID -->
+                                    <GridViewColumn Header="ID" Width="100">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding IdSortArray}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch"
+                                 IsEnabled="False"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
+                                    <!-- Колонка исходного массива -->
+                                    <GridViewColumn Header="Исходный массив" Width="200">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBox Text="{Binding ArrayData}" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 HorizontalAlignment="Stretch"
+                                 IsReadOnly="True"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Время сохранения" Width="220">
+                                        <GridViewColumn.CellTemplate >
+                                            <DataTemplate>
+                                                <TextBox
+                                                    IsReadOnly="True"
+            VerticalAlignment="Center"
+            Text="{Binding CreatedAt, Converter={StaticResource DateTimeConverter},
+          ConverterParameter='dd-MM-yyyy HH:mm:ss'}" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <!-- Кнопка удаления -->
+                                    <GridViewColumn Header="" Width="60">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding DataContext.DeleteArrayCommand, 
+RelativeSource={RelativeSource AncestorType=Window}}"
+CommandParameter="{Binding}" 
+
+ToolTip="Удалить"
+HorizontalAlignment="Center">
+                                                    <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                </Viewbox>
             </TabItem>
         </TabControl>
     </Grid>

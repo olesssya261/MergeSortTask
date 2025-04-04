@@ -21,11 +21,8 @@ namespace MergeSort.Service
         /// <exception cref="FormatException">Если строка содержит недопустимые символы</exception>
         public static double[] ParseStringToDoubleArray(string input)
         {
-            if (input == null)
-                throw new ArgumentNullException(nameof(input), "Входная строка не может быть null");
-
             if (string.IsNullOrWhiteSpace(input))
-                return Array.Empty<double>();
+                return null;
 
             string[] stringValues = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             double[] result = new double[stringValues.Length];
@@ -51,7 +48,7 @@ namespace MergeSort.Service
         public static string ParseDoubleArrayToString(double[] array)
         {
             if (array == null)
-               return "";
+               return null;
 
             return string.Join(" ", Array.ConvertAll(array, x => x.ToString(culture)));
         }

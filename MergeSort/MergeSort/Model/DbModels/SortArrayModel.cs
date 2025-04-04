@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 /// <summary>
 /// Модель для хранения данных о сортировке массива чисел double в базе данных.
@@ -9,6 +11,8 @@ public class SortArrayModel
     /// <summary>
     /// Уникальный идентификатор записи.
     /// </summary>
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     /// <summary>
@@ -22,13 +26,14 @@ public class SortArrayModel
     /// <summary>
     /// Отсортированный массив в бинарном формате (опционально).
     /// </summary>
+
     public byte[]? SortedArrayDataBlob { get; set; }
 
     // Остальные nullable свойства
     public uint? Swaps { get; set; }
     public uint? Comparisons { get; set; }
     public string? SortType { get; set; }
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     /// <summary>
     /// Доступ к данным как double[].
@@ -39,7 +44,7 @@ public class SortArrayModel
         get
         {
             if (ArrayDataBlob == null)
-                throw new InvalidOperationException("ArrayDataBlob не может быть null");
+                return null;
 
             if (ArrayDataBlob.Length % sizeof(double) != 0)
                 throw new InvalidOperationException("Некорректный размер данных");
@@ -54,17 +59,53 @@ public class SortArrayModel
             Buffer.BlockCopy(value, 0, ArrayDataBlob, 0, ArrayDataBlob.Length);
         }
     }
-
-    /// <summary>
-    /// Доступ к отсортированным данным как double[].
-    /// </summary>
     [NotMapped]
-    public double[]? SortedArrayData
+    public double[] SortedArrayData
     {
-        get => SortedArrayDataBlob == null ? null : GetDoublesFromBytes(SortedArrayDataBlob);
-        set => SortedArrayDataBlob = value == null ? null : GetBytesFromDoubles(value);
+        get
+        {
+            if (SortedArrayDataBlob == null)
+                return null;
+            if (SortedArrayDataBlob.Length % sizeof(double) != 0)
+                throw new InvalidOperationException("Некорректный размер данных");
+
+            var result = new double[SortedArrayDataBlob.Length / sizeof(double)];
+            Buffer.BlockCopy(SortedArrayDataBlob, 0, result, 0, SortedArrayDataBlob.Length);
+            return result;
+        }
+        set
+        {
+            if(value is null)
+            {
+                SortedArrayDataBlob = null;
+                return;
+            }
+            SortedArrayDataBlob = new byte[value.Length * sizeof(double)];
+            Buffer.BlockCopy(value, 0, SortedArrayDataBlob, 0, SortedArrayDataBlob.Length);
+        }
     }
 
+    
+
+    public void UpdateData(SortArrayModel sortArrayModel)
+    {
+        if (sortArrayModel == null)
+            throw new ArgumentNullException(nameof(sortArrayModel));
+
+        ArrayDataBlob = sortArrayModel.ArrayDataBlob != null
+            ? (byte[])sortArrayModel.ArrayDataBlob.Clone()
+            : null;
+
+        SortedArrayDataBlob = sortArrayModel.SortedArrayDataBlob != null
+            ? (byte[])sortArrayModel.SortedArrayDataBlob.Clone()
+            : null;
+
+        Swaps = sortArrayModel.Swaps;
+        Comparisons = sortArrayModel.Comparisons;
+        SortType = sortArrayModel.SortType;
+        CreatedAt = sortArrayModel.CreatedAt;
+
+    }
     private static double[] GetDoublesFromBytes(byte[] bytes)
     {
         var result = new double[bytes.Length / sizeof(double)];

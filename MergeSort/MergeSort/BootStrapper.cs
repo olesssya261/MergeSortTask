@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MergeSort.ViewModel;
 
 namespace MergeSort
 {
@@ -12,7 +13,7 @@ namespace MergeSort
         public BootStrapper(){}
         public Window Run()
         {
-            return new MainWindow();
+            return new MainWindow(new MainViewModel());
         }
     }
 }
