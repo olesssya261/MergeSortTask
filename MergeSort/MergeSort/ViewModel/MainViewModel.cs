@@ -211,7 +211,17 @@ namespace MergeSort.ViewModel
         [RelayCommand]
         private void SaveArray()
         {
-            ArrayModel.Save();
+            try
+            {
+                ArrayModel.Save();
+                MessageBox.Show("Массив сохранён в БД.",
+                           "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex) {
+                MessageBox.Show($"Ошибка при сохранении массива в БД: {ex.Message}",
+                                  "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
         }
         [RelayCommand]
         private void DeleteArray(SortArrayObservableModel sortArrayObservableModel)

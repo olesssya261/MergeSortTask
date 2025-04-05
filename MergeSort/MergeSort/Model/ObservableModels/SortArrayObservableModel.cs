@@ -94,18 +94,15 @@ namespace MergeSort.Model.ObservableModels
                         DbContextSingleton.Instance.SaveChanges();
                     }
                 }
-                MessageBox.Show("Массив сохранён в БД.",
-                           "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+
             }
             catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.Sqlite.SqliteException sqliteEx && sqliteEx.SqliteErrorCode == 19) // SQLITE_CONSTRAINT
             {
-                MessageBox.Show("Массив с такими данными уже существует в базе данных.",
-                                "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception("Массив с такими данными уже существует в базе данных.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show($"Ошибка при сохранении массива в БД: {ex.Message}",
-                                "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception("Ошибка при сохранении массива в БД");
             }
         }
         public void Delete()
