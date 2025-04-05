@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 /// <summary>
 /// Модель для хранения данных о сортировке массива чисел double в базе данных.
@@ -75,7 +74,7 @@ public class SortArrayModel
         }
         set
         {
-            if(value is null)
+            if (value is null)
             {
                 SortedArrayDataBlob = null;
                 return;
@@ -85,7 +84,7 @@ public class SortArrayModel
         }
     }
 
-    
+
 
     public void UpdateData(SortArrayModel sortArrayModel)
     {
@@ -106,17 +105,5 @@ public class SortArrayModel
         CreatedAt = sortArrayModel.CreatedAt;
 
     }
-    private static double[] GetDoublesFromBytes(byte[] bytes)
-    {
-        var result = new double[bytes.Length / sizeof(double)];
-        Buffer.BlockCopy(bytes, 0, result, 0, bytes.Length);
-        return result;
-    }
 
-    private static byte[] GetBytesFromDoubles(double[] doubles)
-    {
-        var bytes = new byte[doubles.Length * sizeof(double)];
-        Buffer.BlockCopy(doubles, 0, bytes, 0, bytes.Length);
-        return bytes;
-    }
 }

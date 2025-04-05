@@ -96,10 +96,11 @@
                     materialDesign:NavigationRailAssist.SelectionCornerRadius="50"
                     materialDesign:NavigationRailAssist.ShowSelectionBackground="True"
                     Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+                    x:Name="MenuTab"
                     TabStripPlacement="Bottom" SelectionChanged="TabControl_SelectionChanged">
 
             <!-- Вкладка сортировки -->
-            <TabItem   Background="White" Header="Сортировка" Width="150" Margin="0 0 0 0">
+            <TabItem x:Name="SortTab" Background="White" Header="Сортировка" Width="150" Margin="0 0 0 0">
                 <Viewbox Stretch="Uniform" StretchDirection="Both" Margin="0">
                     <Grid>
                     <Grid.RowDefinitions>
@@ -291,11 +292,15 @@
                                   Visibility="{Binding SortedArrayFlag, Converter={StaticResource BoolToVisConverter}}"
           VerticalAlignment="Top"
           ItemsSource="{Binding SortedArrayModels}"
-          SelectedItem="{Binding SelectedArrayModel}"
           Margin="8"
           BorderThickness="1"
           BorderBrush="#DDD"
           ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.Resources>
                                 <converters:DateTimeToStringConverter x:Key="DateTimeConverter"/>
                             </ListView.Resources>
@@ -406,16 +411,21 @@ HorizontalAlignment="Center">
                                     </GridViewColumn>
                                 </GridView>
                             </ListView.View>
+                          
                         </ListView>
                         <ListView HorizontalAlignment="Center"
                                          Visibility="{Binding SortedArrayFlag, Converter={StaticResource ReverseBoolToVisConverter}}"
           VerticalAlignment="Top"
           ItemsSource="{Binding InitialArrayModels}"
-          SelectedItem="{Binding SelectedArrayModel}"
           Margin="8"
           BorderThickness="1"
           BorderBrush="#DDD"
           ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.Resources>
                                 <converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
                                 <converters:DateTimeToStringConverter x:Key="DateTimeConverter"/>

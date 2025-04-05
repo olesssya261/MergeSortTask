@@ -1,19 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MergeSort.DbLocator;
 using MergeSort.Service;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace MergeSort.Model.ObservableModels
 {
-    public partial class SortArrayObservableModel:ObservableObject
+    public partial class SortArrayObservableModel : ObservableObject
     {
         private SortArrayModel sortArrayModel;
         [ObservableProperty]
@@ -45,15 +38,15 @@ namespace MergeSort.Model.ObservableModels
         public SortArrayObservableModel(SortArrayModel sortArrayModel)
         {
             this.sortArrayModel = sortArrayModel;
-            IdSortArray= sortArrayModel.Id;
-            CreatedAt= sortArrayModel.CreatedAt;
+            IdSortArray = sortArrayModel.Id;
+            CreatedAt = sortArrayModel.CreatedAt;
             ArrayData = ParserService.ParseDoubleArrayToString(sortArrayModel.ArrayData);
             SortedArrayData = ParserService.ParseDoubleArrayToString(sortArrayModel.SortedArrayData);
-            if(sortArrayModel.Swaps.HasValue) Swaps = (uint)sortArrayModel.Swaps;
-            if(sortArrayModel.Comparisons.HasValue) Comparisons = (uint)sortArrayModel.Comparisons;
+            if (sortArrayModel.Swaps.HasValue) Swaps = (uint)sortArrayModel.Swaps;
+            if (sortArrayModel.Comparisons.HasValue) Comparisons = (uint)sortArrayModel.Comparisons;
             SortType = sortArrayModel.SortType;
         }
-     
+
         public bool HasChanges => ArrayData != ParserService.ParseDoubleArrayToString(sortArrayModel?.ArrayData) ||
             SortedArrayData != ParserService.ParseDoubleArrayToString(sortArrayModel?.SortedArrayData)
             || Swaps != sortArrayModel?.Swaps
@@ -77,7 +70,7 @@ namespace MergeSort.Model.ObservableModels
             {
                 var existingEntity = FindArray();
 
-                 if (existingEntity == null)
+                if (existingEntity == null)
                 {
                     sortArrayModel = new();
                     UpdateModelFields();
@@ -136,11 +129,12 @@ namespace MergeSort.Model.ObservableModels
                             "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-        
+
         }
         partial void OnArrayDataChanged(string value)
         {
             SortedArrayData = null;
+            SortType = null;
             Swaps = 0;
             Comparisons = 0;
         }
@@ -148,7 +142,7 @@ namespace MergeSort.Model.ObservableModels
         {
             sortArrayModel.ArrayData = ParserService.ParseStringToDoubleArray(ArrayData);
             sortArrayModel.SortedArrayData = ParserService.ParseStringToDoubleArray(SortedArrayData);
-            sortArrayModel.Swaps = Swaps==0?null:Swaps;
+            sortArrayModel.Swaps = Swaps == 0 ? null : Swaps;
             sortArrayModel.Comparisons = Comparisons == 0 ? null : Comparisons;
             sortArrayModel.SortType = SortType;
         }

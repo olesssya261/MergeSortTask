@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace MergeSort.Service
 {
@@ -48,7 +43,7 @@ namespace MergeSort.Service
         public static string ParseDoubleArrayToString(double[] array)
         {
             if (array == null)
-               return null;
+                return null;
 
             return string.Join(" ", Array.ConvertAll(array, x => x.ToString(culture)));
         }

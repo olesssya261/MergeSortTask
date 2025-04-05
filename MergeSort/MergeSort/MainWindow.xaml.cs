@@ -1,15 +1,8 @@
-﻿using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MergeSort.Model.ObservableModels;
 using MergeSort.ViewModel;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace MergeSort;
 
@@ -18,26 +11,38 @@ namespace MergeSort;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public event EventHandler openDbMenu;
     public MainWindow(MainViewModel mainViewModel)
     {
+        mainViewModel.openArray += OpenArrayHendler;
         DataContext = mainViewModel;
         InitializeComponent();
     }
 
+    private void OpenArrayHendler(object? sender, EventArgs e)
+    {
+        MenuTab.SelectedItem = SortTab;
+    }
+    private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (sender is ListViewItem item && item.DataContext is SortArrayObservableModel model)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                vm.OpenArrayCommand.Execute(model);
+                e.Handled = true; // Останавливаем дальнейшую обработку события
+            }
+        }
+    }
     private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (DataContext is MainViewModel vm)
         {
-            vm.OpenDbMenuCommand?.Execute(null);
-
             if (e.Source is TabControl tabControl &&
             tabControl.SelectedItem == DatabaseTab)
             {
-                
-             vm.OpenDbMenuCommand?.Execute(null);
+                vm.OpenDbMenuCommand?.Execute(null);
             }
-            
+
         }
     }
 }

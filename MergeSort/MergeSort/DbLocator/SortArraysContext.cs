@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SortedModel;
-using System;
 
 namespace MergeSort.DbLocator
 {

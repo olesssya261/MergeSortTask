@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-
-namespace MergeSort.DbLocator
+﻿namespace MergeSort.DbLocator
 {
     public static class DbContextSingleton
     {
