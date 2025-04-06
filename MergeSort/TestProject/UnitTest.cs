@@ -282,14 +282,13 @@ namespace MergeSort.Tests
                 context.SaveChanges();
 
                 stopwatch.Stop();
-                TestContext.WriteLine($"Óñïåøíî î÷èùåíà áàçà äàííûõ ñ {totalArrays} çàïèñÿìè. Âðåìÿ âûïîëíåíèÿ: {stopwatch.ElapsedMilliseconds} ìñ");
+                TestContext.WriteLine($"Успешно очищена база данных с {totalArrays} записями. Время выполнения: {stopwatch.ElapsedMilliseconds} мс");
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                Assert.Fail($"Îøèáêà ïðè î÷èñòêå áàçû äàííûõ ñ {totalArrays} çàïèñÿìè: {ex.Message}. Âðåìÿ âûïîëíåíèÿ: {stopwatch.ElapsedMilliseconds} ìñ");
+                Assert.Fail($"Ошибка при очистке базы данных с {totalArrays} записями: {ex.Message}. Время выполнения: {stopwatch.ElapsedMilliseconds} мс");
             }
         }
-
     }
 }
