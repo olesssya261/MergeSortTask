@@ -12,7 +12,7 @@
         Background="White"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="MainWindow">
+        Title="Главное окно">
     <Window.Resources>
         <converters:BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
         <converters:ReverseBooleanToVisibilityConverter x:Key="ReverseBoolToVisConverter"/>

@@ -12,8 +12,6 @@ namespace MergeSort.DbLocator
         /// </summary>
         public SortArraysContext()
         {
-
-            Database.EnsureDeleted();
             //Создаёт БД если такова не была создана
             Database.EnsureCreated();
         }

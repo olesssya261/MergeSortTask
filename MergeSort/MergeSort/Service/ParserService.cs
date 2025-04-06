@@ -18,6 +18,12 @@ namespace MergeSort.Service
             if (string.IsNullOrWhiteSpace(input))
                 return null;
 
+            // Проверка на наличие запятых
+            if (input.Contains(','))
+            {
+                throw new FormatException("Использование запятых в качестве разделителей запрещено. Используйте пробелы.");
+            }
+
             // Разделение строки по пробелам
             string[] stringValues = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             double[] result = new double[stringValues.Length];
