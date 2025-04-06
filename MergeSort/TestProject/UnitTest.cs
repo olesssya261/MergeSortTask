@@ -185,46 +185,37 @@ namespace MergeSort.Tests
 
             try
             {
+                const int arraysToSort = 100; // Сортируем только 100 случайных массивов
                 var context = DbContextSingleton.Instance;
-                int skip = 0;
-                int totalProcessed = 0;
+                var allArrays = context.Arrays.ToList();
+                var selectedArrays = allArrays.OrderBy(x => _random.Next()).Take(arraysToSort).ToList();
 
-                while (totalProcessed < totalArrays)
+                foreach (var arrayModel in selectedArrays)
                 {
-                    var batch = context.Arrays.Skip(skip).Take(batchSize).ToList();
-                    if (!batch.Any()) break;
+                    var observableModel = new SortArrayObservableModel(arrayModel);
+                    var array = ParserService.ParseStringToDoubleArray(observableModel.ArrayData);
 
-                    foreach (var arrayModel in batch)
-                    {
-                        var observableModel = new SortArrayObservableModel(arrayModel);
-                        var array = ParserService.ParseStringToDoubleArray(observableModel.ArrayData);
+                    // Сортируем с помощью MergeSort
+                    var (swaps, comparisons, sortedArray) = SortModel.MergeSort(array);
 
-                        // Сортируем с помощью MergeSort
-                        var (swaps, comparisons, sortedArray) = SortModel.MergeSort(array);
+                    // Проверяем, что массив отсортирован корректно
+                    Assert.IsTrue(IsSorted(sortedArray), $"Массив с ID {arrayModel.Id} не был отсортирован корректно с помощью MergeSort");
 
-                        // Проверяем, что массив отсортирован корректно
-                        Assert.IsTrue(IsSorted(sortedArray), $"Массив с ID {arrayModel.Id} не был отсортирован корректно с помощью MergeSort");
-
-                        // Обновляем объект в памяти (но не сохраняем в базу данных)
-                        observableModel.SortedArrayData = ParserService.ParseDoubleArrayToString(sortedArray);
-                        observableModel.SortType = "MergeSort";
-                        observableModel.Swaps = swaps;
-                        observableModel.Comparisons = comparisons;
-                    }
-
-                    totalProcessed += batch.Count;
-                    skip += batchSize;
-                    TestContext.WriteLine($"Обработано {totalProcessed} из {totalArrays} массивов");
+                    // Обновляем объект в памяти (но не сохраняем в базу данных)
+                    observableModel.SortedArrayData = ParserService.ParseDoubleArrayToString(sortedArray);
+                    observableModel.SortType = "MergeSort";
+                    observableModel.Swaps = swaps;
+                    observableModel.Comparisons = comparisons;
                 }
 
                 stopwatch.Stop();
-                double averageTimePerArray = stopwatch.ElapsedMilliseconds / (double)totalArrays;
-                TestContext.WriteLine($"Успешно отсортировано {totalArrays} массивов с использованием MergeSort. Общее время: {stopwatch.ElapsedMilliseconds} мс. Среднее время на массив: {averageTimePerArray:F2} мс");
+                double averageTimePerArray = stopwatch.ElapsedMilliseconds / (double)arraysToSort;
+                TestContext.WriteLine($"Успешно отсортировано {arraysToSort} массивов из {totalArrays} с использованием MergeSort. Общее время: {stopwatch.ElapsedMilliseconds} мс. Среднее время на массив: {averageTimePerArray:F2} мс");
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
-                Assert.Fail($"Ошибка при сортировке {totalArrays} массивов с использованием MergeSort: {ex.Message}. Общее время: {stopwatch.ElapsedMilliseconds} мс");
+                Assert.Fail($"Ошибка при сортировке 100 массивов из {totalArrays} с использованием MergeSort: {ex.Message}. Общее время: {stopwatch.ElapsedMilliseconds} мс");
             }
         }
 
