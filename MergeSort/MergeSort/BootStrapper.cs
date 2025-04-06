@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using MergeSort.ViewModel;
 
 namespace MergeSort
 {
@@ -8,7 +7,7 @@ namespace MergeSort
         public BootStrapper() { }
         public Window Run()
         {
-            return new MainWindow(new MainViewModel());
+            return new MainWindow();
         }
     }
 }

@@ -1,163 +1,212 @@
-﻿using System.Windows;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MergeSort.DbLocator;
 using MergeSort.Service;
 using Microsoft.EntityFrameworkCore;
+using System.Windows;
 
 namespace MergeSort.Model.ObservableModels
 {
+    /// <summary>
+    /// Наблюдаемая модель для работы с массивами и их сортировкой.
+    /// Предоставляет функционал для сохранения, удаления и обновления данных в базе.
+    /// </summary>
     public partial class SortArrayObservableModel : ObservableObject
     {
+        /// <summary>
+        /// Базовая модель данных для работы с массивом.
+        /// </summary>
         private SortArrayModel sortArrayModel;
+
+        /// <summary>
+        /// Строковое представление исходного массива данных.
+        /// </summary>
         [ObservableProperty]
         string arrayData;
 
+        /// <summary>
+        /// Строковое представление отсортированного массива данных.
+        /// </summary>
         [ObservableProperty]
         string sortedArrayData;
 
+        /// <summary>
+        /// Количество перестановок элементов при сортировке.
+        /// </summary>
         [ObservableProperty]
-        uint swaps;
+        uint? swaps;
 
+        /// <summary>
+        /// Количество сравнений элементов при сортировке.
+        /// </summary>
         [ObservableProperty]
-        uint comparisons;
+        uint? comparisons;
 
+        /// <summary>
+        /// Тип алгоритма сортировки.
+        /// </summary>
         [ObservableProperty]
-        string sortType;
+        string? sortType;
 
+        /// <summary>
+        /// Дата и время создания записи.
+        /// </summary>
         [ObservableProperty]
         DateTime createdAt;
 
-        [ObservableProperty]
-        private int idSortArray;
-
+        /// <summary>
+        /// Инициализирует новый экземпляр класса SortArrayObservableModel.
+        /// Создает новую базовую модель для работы.
+        /// </summary>
         public SortArrayObservableModel()
         {
+            // Инициализация новой модели
             sortArrayModel = new();
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса SortArrayObservableModel на основе существующей модели.
+        /// </summary>
+        /// <param name="sortArrayModel">Модель данных для инициализации.</param>
         public SortArrayObservableModel(SortArrayModel sortArrayModel)
         {
+            // Сохраняем переданную модель
             this.sortArrayModel = sortArrayModel;
-            IdSortArray = sortArrayModel.Id;
+
+            // Копируем основные свойства
             CreatedAt = sortArrayModel.CreatedAt;
+
+            // Конвертируем массивы в строки для отображения
             ArrayData = ParserService.ParseDoubleArrayToString(sortArrayModel.ArrayData);
             SortedArrayData = ParserService.ParseDoubleArrayToString(sortArrayModel.SortedArrayData);
-            if (sortArrayModel.Swaps.HasValue) Swaps = (uint)sortArrayModel.Swaps;
-            if (sortArrayModel.Comparisons.HasValue) Comparisons = (uint)sortArrayModel.Comparisons;
+
+            // Копируем опциональные параметры сортировки
+            if (sortArrayModel.Swaps.HasValue) Swaps = sortArrayModel.Swaps;
+            if (sortArrayModel.Comparisons.HasValue) Comparisons = sortArrayModel.Comparisons;
             SortType = sortArrayModel.SortType;
         }
 
-        public bool HasChanges => ArrayData != ParserService.ParseDoubleArrayToString(sortArrayModel?.ArrayData) ||
-            SortedArrayData != ParserService.ParseDoubleArrayToString(sortArrayModel?.SortedArrayData)
-            || Swaps != sortArrayModel?.Swaps
-            || Comparisons != sortArrayModel?.Comparisons
-            || SortType != sortArrayModel?.SortType;
-
+        /// <summary>
+        /// Сохраняет текущее состояние модели в базе данных.
+        /// </summary>
+        /// <exception cref="Exception">
+        /// Возникает при:
+        /// 1. Нарушении уникальности данных (код ошибки 19 SQLite)
+        /// 2. Общих ошибках сохранения
+        /// </exception>
         public void Save()
         {
-            if (!HasChanges)
-            {
-                MessageBox.Show("Массив не был изменён перед сохранением.",
-                          "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-            else
-            {
-                IdSortArray = 0;
-            }
-
             try
             {
+                // Пытаемся найти существующую запись с таким же массивом
                 var existingEntity = FindArray();
 
                 if (existingEntity == null)
                 {
-                    sortArrayModel = new();
-                    UpdateModelFields();
-                    sortArrayModel.CreatedAt = DateTime.Now;
+                    // Если запись не найдена - создаем новую
+                    UpdateModelFields(sortArrayModel);
+                    sortArrayModel.CreatedAt = DateTime.Now; // Устанавливаем текущую дату
+
+                    // Добавляем в контекст и сохраняем
                     DbContextSingleton.Instance.Set<SortArrayModel>().Add(sortArrayModel);
                     DbContextSingleton.Instance.SaveChanges();
-                    IdSortArray = sortArrayModel.Id;
                 }
                 else
                 {
-                    var confirmResult = MessageBox.Show(
-                        $"Запись с таким массивом уже существует. Вы уверены, что хотите перезаписать ее данные?",
-                        "Подтверждение сохранения",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
-
-                    if (confirmResult != MessageBoxResult.No)
-                    {
-                        UpdateModelFields();
-                        existingEntity.UpdateData(sortArrayModel);
-                        DbContextSingleton.Instance.SaveChanges();
-                    }
+                    // Если запись найдена - обновляем ее данные
+                    UpdateModelFields(existingEntity);
+                    DbContextSingleton.Instance.SaveChanges();
                 }
 
+                // Сбрасываем базовую модель после сохранения
+                sortArrayModel = new();
             }
-            catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.Sqlite.SqliteException sqliteEx && sqliteEx.SqliteErrorCode == 19) // SQLITE_CONSTRAINT
+            catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.Sqlite.SqliteException sqliteEx && sqliteEx.SqliteErrorCode == 19)
             {
+                // Обработка нарушения уникальности (массив уже существует)
                 throw new Exception("Массив с такими данными уже существует в базе данных.");
             }
             catch (Exception)
             {
+                // Общая обработка ошибок сохранения
                 throw new Exception("Ошибка при сохранении массива в БД");
             }
         }
+
+        /// <summary>
+        /// Удаляет текущий массив из базы данных.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// Возникает, если массив для удаления не найден в базе.
+        /// </exception>
         public void Delete()
         {
             try
             {
+                // Ищем запись для удаления
                 var existingEntity = FindArray();
 
                 if (existingEntity == null)
                 {
-                    throw new InvalidOperationException("Генератор для удаления не найден.");
+                    throw new InvalidOperationException("Массив для удаления не найден.");
                 }
 
+                // Удаляем и сохраняем изменения
                 DbContextSingleton.Instance.Set<SortArrayModel>().Remove(existingEntity);
-
                 DbContextSingleton.Instance.SaveChanges();
             }
             catch (Exception ex)
             {
+                // Показываем сообщение об ошибке пользователю
                 MessageBox.Show($"Ошибка при удалении массива из БД {ex.Message}",
                             "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
         }
+
+        /// <summary>
+        /// Обработчик изменения свойства ArrayData.
+        /// Сбрасывает связанные данные при изменении исходного массива.
+        /// </summary>
+        /// <param name="value">Новое значение массива.</param>
         partial void OnArrayDataChanged(string value)
         {
+            // При изменении исходного массива сбрасываем все производные данные
             SortedArrayData = null;
             SortType = null;
             Swaps = 0;
             Comparisons = 0;
         }
-        private void UpdateModelFields()
+
+        /// <summary>
+        /// Обновляет поля указанной модели на основе текущих значений наблюдаемой модели.
+        /// </summary>
+        /// <param name="sortArrayModel">Модель для обновления.</param>
+        private void UpdateModelFields(SortArrayModel sortArrayModel)
         {
+            // Конвертируем строки обратно в массивы чисел
             sortArrayModel.ArrayData = ParserService.ParseStringToDoubleArray(ArrayData);
             sortArrayModel.SortedArrayData = ParserService.ParseStringToDoubleArray(SortedArrayData);
-            sortArrayModel.Swaps = Swaps == 0 ? null : Swaps;
-            sortArrayModel.Comparisons = Comparisons == 0 ? null : Comparisons;
+
+            // Копируем параметры сортировки
+            sortArrayModel.Swaps = Swaps;
+            sortArrayModel.Comparisons = Comparisons;
             sortArrayModel.SortType = SortType;
         }
+
+        /// <summary>
+        /// Находит запись в базе данных по текущему значению массива.
+        /// </summary>
+        /// <returns>
+        /// Найденная модель массива или null, если совпадений не найдено.
+        /// </returns>
         private SortArrayModel? FindArray()
         {
-            var query = DbContextSingleton.Instance.Set<SortArrayModel>();
-
-            if (IdSortArray != 0)
-            {
-                // Сначала ищем по ID (быстро, использует индекс)
-                var byId = query.FirstOrDefault(e => e.Id == IdSortArray);
-                if (byId != null) return byId;
-            }
-
-            // Если не нашли по ID или ID=0, ищем по ArrayData
-            var existingEntity = query
-                .AsEnumerable() // Переключаемся на клиентскую обработку
+            // Получаем все записи из БД и ищем совпадение по массиву
+            // Используем AsEnumerable() для клиентской обработки сравнения массивов
+            var existingEntity = DbContextSingleton.Instance.Set<SortArrayModel>()
+                .AsEnumerable()
                 .FirstOrDefault(e => e.ArrayData.SequenceEqual(ParserService.ParseStringToDoubleArray(ArrayData)));
+
             return existingEntity;
         }
     }

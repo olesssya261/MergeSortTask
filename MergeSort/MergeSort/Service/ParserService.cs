@@ -4,24 +4,25 @@ namespace MergeSort.Service
 {
     public static class ParserService
     {
+        // Культура используется для гарантии, что точка будет использоваться как десятичный разделитель
         private static readonly CultureInfo culture = CultureInfo.InvariantCulture;
 
         /// <summary>
-        /// Преобразует строку в массив double, используя пробелы как разделители
-        /// и точку как десятичный разделитель.
+        /// Преобразует строку в массив чисел double, разделённых пробелами.
         /// </summary>
-        /// <param name="input">Входная строка с числами</param>
-        /// <returns>Массив чисел double</returns>
-        /// <exception cref="ArgumentNullException">Если входная строка null</exception>
-        /// <exception cref="FormatException">Если строка содержит недопустимые символы</exception>
+        /// <param name="input">Входная строка, содержащая числа, разделённые пробелами</param>
+        /// <returns>Массив чисел типа double</returns>
+        /// <exception cref="FormatException">Выбрасывается, если строка содержит некорректное число</exception>
         public static double[] ParseStringToDoubleArray(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return null;
 
+            // Разделение строки по пробелам
             string[] stringValues = input.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             double[] result = new double[stringValues.Length];
 
+            // Преобразуем каждую строку в число double
             for (int i = 0; i < stringValues.Length; i++)
             {
                 if (!double.TryParse(stringValues[i], NumberStyles.Any, culture, out result[i]))
@@ -34,17 +35,16 @@ namespace MergeSort.Service
         }
 
         /// <summary>
-        /// Преобразует массив double в строку, используя пробелы как разделители
-        /// и точку как десятичный разделитель.
+        /// Преобразует массив чисел double в строку, разделённую пробелами.
         /// </summary>
-        /// <param name="array">Массив чисел для преобразования</param>
-        /// <returns>Строка с числами, разделенными пробелами</returns>
-        /// <exception cref="ArgumentNullException">Если массив равен null</exception>
+        /// <param name="array">Массив чисел типа double</param>
+        /// <returns>Строка, содержащая числа, разделённые пробелами</returns>
         public static string ParseDoubleArrayToString(double[] array)
         {
             if (array == null)
                 return null;
 
+            // Преобразуем каждый элемент массива в строку и соединяем их пробелами
             return string.Join(" ", Array.ConvertAll(array, x => x.ToString(culture)));
         }
     }

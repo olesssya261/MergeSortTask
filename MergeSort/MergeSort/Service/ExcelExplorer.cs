@@ -1,26 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using MergeSort.Model.ObservableModels;
+using System.Globalization;
+using System.Windows;
 
 namespace MergeSort.Service
 {
+    /// <summary>
+    /// Сервис для работы с Excel-файлами: экспорт и импорт данных сортировки
+    /// </summary>
     public class ExcelExplorer
     {
         /// <summary>
-        /// Экспортирует формулу, параметры задачи, точку оптимизации и изображения графиков в файл Excel.
+        /// Экспортирует результаты сортировки в Excel-файл
         /// </summary>
-        /// <param name="funcPoint">Точка, найденная в результате оптимизации.</param>
-        /// <param name="task">Задание, реализующее интерфейс ITask.</param>
-        /// <param name="filePath">Путь к файлу.</param>
-        /// <param name="sheetName">Имя листа в Excel.</param>
+        /// <param name="arrayModel">Модель с данными для экспорта</param>
+        /// <param name="filePath">Путь к файлу для сохранения</param>
+        /// <param name="sheetName">Имя листа (по умолчанию "SortArrayResult")</param>
+        /// <remarks>
+        /// Формат экспорта:
+        /// 1 строка: "Исходный массив:"
+        /// 2 строка: значения исходного массива
+        /// 3 строка: тип сортировки
+        /// 4 строка: количество перестановок
+        /// 5 строка: количество сравнений
+        /// 6 строка: "Отсортированный массив:"
+        /// 7 строка: значения отсортированного массива
+        /// </remarks>
+
         public static void ExportResultsToExcel(SortArrayObservableModel arrayModel, string filePath, string sheetName = "SortArrayResult")
         {
             try
@@ -83,8 +91,8 @@ namespace MergeSort.Service
                         DataType = CellValues.String
                     };
                     sortTypeCell.Append(new CellValue(arrayModel.SortType ?? "Не указан"));
-                    sortTypeLabelRow.Append(sortTypeLabelCell); // Сначала A3
-                    sortTypeLabelRow.Append(sortTypeCell);     // Затем B3
+                    sortTypeLabelRow.Append(sortTypeLabelCell);
+                    sortTypeLabelRow.Append(sortTypeCell);
                     sheetData.Append(sortTypeLabelRow);
 
                     // Добавляем четвёртую строку с "Перестановки"
@@ -100,9 +108,9 @@ namespace MergeSort.Service
                         CellReference = "B4",
                         DataType = CellValues.Number
                     };
-                    swapsCell.Append(new CellValue(arrayModel.Swaps.ToString(System.Globalization.CultureInfo.InvariantCulture)));
-                    swapsLabelRow.Append(swapsLabelCell); // Сначала A4
-                    swapsLabelRow.Append(swapsCell);     // Затем B4
+                    swapsCell.Append(new CellValue(arrayModel.Swaps?.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    swapsLabelRow.Append(swapsLabelCell);
+                    swapsLabelRow.Append(swapsCell);
                     sheetData.Append(swapsLabelRow);
 
                     // Добавляем пятую строку с "Сравнения"
@@ -115,13 +123,13 @@ namespace MergeSort.Service
                     comparisonsLabelCell.Append(new CellValue("Сравнения:"));
                     Cell comparisonsCell = new Cell()
                     {
-                        CellReference = "B5", // Исправлено с B6 на B5
+                        CellReference = "B5",
                         DataType = CellValues.Number
                     };
-                    comparisonsCell.Append(new CellValue(arrayModel.Comparisons.ToString(System.Globalization.CultureInfo.InvariantCulture)));
-                    comparisonsLabelRow.Append(comparisonsLabelCell); // Сначала A5
-                    comparisonsLabelRow.Append(comparisonsCell);     // Затем B5
-                    sheetData.Append(comparisonsLabelRow);           // Исправлено с SwapsLabelRow на ComparisonsLabelRow
+                    comparisonsCell.Append(new CellValue(arrayModel.Comparisons?.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+                    comparisonsLabelRow.Append(comparisonsLabelCell);
+                    comparisonsLabelRow.Append(comparisonsCell);
+                    sheetData.Append(comparisonsLabelRow);
 
                     // Добавляем шестую строку с заголовком "Отсортированный массив:"
                     Row sortedArrayLabelRow = new Row() { RowIndex = 6U };
@@ -142,7 +150,7 @@ namespace MergeSort.Service
                         for (int i = 0; i < sortArray.Length; i++)
                         {
                             string columnLetter = GetColumnLetter(i + 1);
-                            string cellReference = $"{columnLetter}7"; // Исправлено с 2 на 7
+                            string cellReference = $"{columnLetter}7";
 
                             Cell cell = new Cell()
                             {
@@ -176,7 +184,17 @@ namespace MergeSort.Service
                 });
             }
         }
-
+        /// <summary>
+        /// Экспортирует исходные данные для сортировки в Excel-файл
+        /// </summary>
+        /// <param name="arrayModel">Модель с данными для экспорта</param>
+        /// <param name="filePath">Путь к файлу для сохранения</param>
+        /// <param name="sheetName">Имя листа (по умолчанию "SortArrayResult")</param>
+        /// <remarks>
+        /// Формат экспорта:
+        /// 1 строка: "Исходный массив:"
+        /// 2 строка: значения исходного массива
+        /// </remarks>
         public static void ExportParametersToExcel(SortArrayObservableModel arrayModel, string filePath, string sheetName = "SortArrayResult")
         {
             try
@@ -225,7 +243,7 @@ namespace MergeSort.Service
                     }
                     sheetData.Append(arrayRow);
 
-                   
+
                     // Сохраняем документ
                     workbookPart.Workbook.Save();
                 }
@@ -347,6 +365,11 @@ namespace MergeSort.Service
 
             return value;
         }
+        /// <summary>
+        /// Получает литеру ячейки
+        /// </summary>
+        /// <param name="columnNumber"> номер столбца</param>
+        /// <returns>Литера ячейки.</returns>
         private static string GetColumnLetter(int columnNumber)
         {
             string columnLetter = string.Empty;

@@ -306,18 +306,6 @@
                             </ListView.Resources>
                             <ListView.View>
                                 <GridView>
-                                    <!-- Колонка ID -->
-                                    <GridViewColumn Header="ID" Width="100">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBox Text="{Binding IdSortArray}" 
-                                 BorderThickness="0"
-                                 Background="Transparent"
-                                 HorizontalAlignment="Stretch"
-                                 IsEnabled="False"/>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
 
                                     <!-- Колонка исходного массива -->
                                     <GridViewColumn Header="Исходный массив" Width="200">
@@ -432,19 +420,7 @@ HorizontalAlignment="Center">
                             </ListView.Resources>
                             <ListView.View>
                                 <GridView>
-                                    <!-- Колонка ID -->
-                                    <GridViewColumn Header="ID" Width="100">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <TextBox Text="{Binding IdSortArray}" 
-                                 BorderThickness="0"
-                                 Background="Transparent"
-                                 HorizontalAlignment="Stretch"
-                                 IsEnabled="False"/>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
+                                   
                                     <!-- Колонка исходного массива -->
                                     <GridViewColumn Header="Исходный массив" Width="200">
                                         <GridViewColumn.CellTemplate>

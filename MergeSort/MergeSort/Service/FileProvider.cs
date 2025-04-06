@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MergeSort.Enum;
+﻿using MergeSort.Enum;
 using Microsoft.Win32;
 
 namespace MergeSort.Service
@@ -20,15 +15,17 @@ namespace MergeSort.Service
         /// <returns>Путь к выбранному файлу или null, если выбор отменён</returns>
         public static string GetFilePath(FileMode mode, string filter, string defaultFileName = "", string title = "Выберите файл")
         {
+            // Проверяем, что фильтр задан
             if (string.IsNullOrEmpty(filter))
                 throw new ArgumentException("Параметр filter не может быть пустым.");
 
+            // Выбираем действие в зависимости от режима (открытие или сохранение файла)
             switch (mode)
             {
                 case FileMode.Open:
-                    return OpenFileDialog(filter, title);
+                    return OpenFileDialog(filter, title); // Открытие файла
                 case FileMode.Save:
-                    return SaveFileDialog(filter, defaultFileName, title);
+                    return SaveFileDialog(filter, defaultFileName, title); // Сохранение файла
                 default:
                     throw new ArgumentException("Недопустимый режим. Используйте FileMode.Open или FileMode.Save.");
             }
@@ -39,18 +36,20 @@ namespace MergeSort.Service
         /// </summary>
         private static string OpenFileDialog(string filter, string title)
         {
+            // Создаем диалоговое окно для открытия файла
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                Filter = filter,
-                Title = title,
+                Filter = filter, // Применяем фильтр расширений
+                Title = title, // Устанавливаем заголовок окна
                 Multiselect = false // Разрешаем выбор только одного файла
             };
 
+            // Показываем диалог и возвращаем путь выбранного файла, если пользователь подтвердил выбор
             if (openFileDialog.ShowDialog() == true)
             {
                 return openFileDialog.FileName;
             }
-            return null;
+            return null; // Возвращаем null, если выбор отменён
         }
 
         /// <summary>
@@ -58,20 +57,22 @@ namespace MergeSort.Service
         /// </summary>
         private static string SaveFileDialog(string filter, string defaultFileName, string title)
         {
+            // Создаем диалоговое окно для сохранения файла
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
-                Filter = filter,
-                Title = title,
-                FileName = defaultFileName,
+                Filter = filter, // Применяем фильтр расширений
+                Title = title, // Устанавливаем заголовок окна
+                FileName = defaultFileName, // Имя файла по умолчанию (для сохранения)
                 DefaultExt = GetDefaultExtension(filter), // Устанавливаем расширение по умолчанию
-                OverwritePrompt = true // Предупреждать, если файл существует
+                OverwritePrompt = true // Показывать предупреждение, если файл уже существует
             };
 
+            // Показываем диалог и возвращаем путь сохранённого файла, если пользователь подтвердил выбор
             if (saveFileDialog.ShowDialog() == true)
             {
                 return saveFileDialog.FileName;
             }
-            return null;
+            return null; // Возвращаем null, если выбор отменён
         }
 
         /// <summary>
@@ -79,13 +80,15 @@ namespace MergeSort.Service
         /// </summary>
         private static string GetDefaultExtension(string filter)
         {
+            // Разделяем фильтр на части
             string[] parts = filter.Split('|');
             if (parts.Length > 1)
             {
+                // Получаем первое расширение из фильтра (например, *.xlsx)
                 string firstExtension = parts[1].Split(';')[0].Replace("*", "").Trim();
-                return firstExtension;
+                return firstExtension; // Возвращаем расширение
             }
-            return "";
+            return ""; // Если расширение не указано, возвращаем пустую строку
         }
     }
 }
