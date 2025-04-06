@@ -7,7 +7,7 @@ namespace MergeSort
         public BootStrapper() { }
         public Window Run()
         {
-            return new MainWindow();
+            return new MainWindow(new ViewModel.MainViewModel());
         }
     }
 }
