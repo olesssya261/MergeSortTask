@@ -64,7 +64,7 @@ public class SortArrayModel
         }
         set
         {
-            if (ArrayDataBlob == null)
+            if (value == null)
                 throw new InvalidOperationException("Исходный массив не может быть пуст при сохранении в БД");
             ArrayDataBlob = new byte[value.Length * sizeof(double)];
             Buffer.BlockCopy(value, 0, ArrayDataBlob, 0, ArrayDataBlob.Length);
